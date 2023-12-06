@@ -1,7 +1,23 @@
 //========================================================================
 // RegInc Test
 //========================================================================
-
+`default_nettype none
+module Demo_Wrapper (
+// ifdef USE_POWER_PINS
+	inout vccd1, // User area 1 1.8V supply 
+	inout vssd1, // User area 1 digital ground 
+// `endif
+	input wire wb_clk_i,
+	input wire wb_rst_i,
+	input wire wbs_stb_i,
+	input wire wbs_cyc_i,
+	input wire wbs_we_i,
+	input wire [3:0] wbs_sel_i,
+	input wire [31:0] wbs_dat_i,
+	input wire [31:0] wbs_adr_i,
+	output wire wbs_ack_o,
+	output wire [31:0] wbs_dat_o
+);
     // proc -> wb
     // recv_msg
     //     69          68        67       66:64      63:32     31:0
@@ -26,8 +42,8 @@
 
     Wishbone wb (
         //‘ifdef USE_POWER_PINS
-        .vccd1(vccd1),	// User area 1 1.8V power
-        .vssd1(vssd1),	// User area 1 digital ground
+        // .vccd1(vccd1),	// User area 1 1.8V power
+        // .vssd1(vssd1),	// User area 1 digital ground
         //‘endif
         //inputs
         .clk  (wb_clk_i),
@@ -59,8 +75,8 @@
 
     Adder adder (
         //‘ifdef USE_POWER_PINS
-        .vccd1(vccd1),	// User area 1 1.8V power
-        .vssd1(vssd1),	// User area 1 digital ground
+        // .vccd1(vccd1),	// User area 1 1.8V power
+        // .vssd1(vssd1),	// User area 1 digital ground
         //‘endif
         
         .clk  (wb_clk_i),
@@ -76,3 +92,5 @@
         .o_stream_val (c_o_stream_val),
         .o_stream_data(c_o_stream_data)
     );
+
+endmodule

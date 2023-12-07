@@ -15,6 +15,9 @@ module Demo_Wrapper (
 	input wire [3:0] wbs_sel_i,
 	input wire [31:0] wbs_dat_i,
 	input wire [31:0] wbs_adr_i,
+    input wire crossbar_control,
+    input wire crossbar_control_en,
+    
 	output wire wbs_ack_o,
 	output wire [31:0] wbs_dat_o
 );
@@ -80,10 +83,10 @@ module Demo_Wrapper (
 	wire [1:0] module_output_xbar_send_val;
 	wire [1:0] module_output_xbar_send_rdy;
 
-    wire crossbar_control;
+    // wire crossbar_control;
     wire crossbar_control_val;
     wire crossbar_control_rdy;
-    assign crossbar_control = 0; // hardcode for now
+    // assign crossbar_control = 0; // hardcode for now
     assign crossbar_control_val = 1;
 
 

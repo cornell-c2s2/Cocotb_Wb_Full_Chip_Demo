@@ -9,7 +9,7 @@
 #define LOOPBACK_OFFSET 0
 #define ADDER_OFFSET 4
 #define ERROR_GPIO 31
-#define DELAY_GPIO 30
+#define XBAR_CTL 30
 
 uint32_t input_values[NUM_TESTS] = {1, 0x00F0, 0x0F00, 0xF000, 0xFFFE};
 int delay_values[NUM_TESTS] = {0, 1, 5, 4, 3};
@@ -35,6 +35,7 @@ void main()
     ManagmentGpio_outputEnable();
     ManagmentGpio_write(0);
 
+    GPIOs_configure(XBAR_CTL,GPIO_MODE_MGMT_STD_INPUT_NOPULL);
     GPIOs_configure(ERROR_GPIO,GPIO_MODE_MGMT_STD_OUTPUT);
 
     // load the configuration 
@@ -45,6 +46,10 @@ void main()
     // turn on wishbone interface
     User_enableIF();
     // signal to cocotb that configuration is done
+    ManagmentGpio_write(1);
+
+    // sync with configuring the xbar
+    ManagmentGpio_write(0);
     ManagmentGpio_write(1);
 
     for (int i = 0; i < NUM_TESTS; i++)

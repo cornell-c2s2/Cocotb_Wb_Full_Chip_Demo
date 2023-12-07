@@ -18,6 +18,13 @@ async def wb_module_test(dut):
     await caravelEnv.release_csb() # Set the SPI CSB  signal high impedance
     await caravelEnv.wait_mgmt_gpio(1)
     cocotb.log.info(f"[TEST] finished configuration") 
+    
+    caravelEnv.drive_gpio_in(10, 1)
+    
+    cocotb.log.info(f"[TEST] finished configuring crossbars") 
+    
+    await caravelEnv.wait_mgmt_gpio(0)  # wait for management GPIO value to be 0
+    await caravelEnv.wait_mgmt_gpio(1) # wait for management GPIO value to be 1
 
     for i in range(NUM_TESTS):
 

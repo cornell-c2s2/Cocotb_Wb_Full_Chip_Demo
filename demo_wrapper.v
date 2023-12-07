@@ -66,16 +66,19 @@ module Demo_Wrapper (
         .i_stream_data(module_input_xbar_recv_msg[31:0]),
         .o_stream_rdy (module_input_xbar_recv_rdy[0]),
 
-        //adder -> wb
-        .i_stream_rdy (c_i_stream_rdy),
-        .o_stream_val (c_o_stream_val),
-        .o_stream_data(c_o_stream_data)
+        //xbar -> wb
+        .i_stream_rdy (module_output_xbar_send_rdy[0]),
+        .o_stream_val (module_output_xbar_send_val[0]),
+        .o_stream_data(module_output_xbar_send_msg[31:0])
 
     );
 
     wire [(2 * 32) - 1:0] module_input_xbar_recv_msg;
 	wire [1:0] module_input_xbar_recv_val;
 	wire [1:0] module_input_xbar_recv_rdy;
+    wire [(2 * 32) - 1:0] module_output_xbar_send_msg;
+	wire [1:0] module_output_xbar_send_val;
+	wire [1:0] module_output_xbar_send_rdy;
 
     wire crossbar_control;
     wire crossbar_control_val;
@@ -121,6 +124,27 @@ module Demo_Wrapper (
         .i_stream_rdy (c_i_stream_rdy),
         .o_stream_val (c_o_stream_val),
         .o_stream_data(c_o_stream_data)
+    );
+
+    crossbaroneinVRTL#(
+        .BIT_WIDTH(32),
+		.N_INPUTS(1),
+		.N_OUTPUTS(2),
+		.CONTROL_BIT_WIDTH(1)
+    ) module_output (
+        .clk(wb_clk_i),
+		.reset(wb_rst_i),
+
+		.recv_msg(c_o_stream_data),
+		.recv_val(c_o_stream_val),
+		.recv_rdy(c_o_stream_rdy),
+
+		.send_msg(module_output_xbar_send_msg),
+		.send_val(module_output_xbar_send_val),
+		.send_rdy(module_output_xbar_send_rdy),
+		.control(crossbar_control),
+		.control_val(crossbar_control_val),
+		.control_rdy(crossbar_control_rdy)
     );
 
 endmodule

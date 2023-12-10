@@ -242,8 +242,8 @@ module Wishbone (
 	localparam [31:0] BASE_ADDRESS = 32'h30000000;
 	localparam [31:0] ERROR_ADDRESS = 32'h30000004;
 	localparam [31:0] FFT_ADDRESS = 805306376;
-	// localparam [31:0] UPPER_BOUND_ADDRESS = BASE_ADDRESS + ((n_modules << 2) + 8);
-	localparam [31:0] UPPER_BOUND_ADDRESS = 32'h30000008;
+	localparam [31:0] UPPER_BOUND_ADDRESS = BASE_ADDRESS + ((n_modules << 2) + 8);
+	// localparam [31:0] UPPER_BOUND_ADDRESS = 32'h30000008;
 	wire [31:0] loopback_reg;
 	reg loopback_reg_en;
 	cmn_EnResetReg #(
@@ -270,7 +270,20 @@ module Wishbone (
 		.en(error_reg_en)
 	);
 
-	assign i_stream_data = wbs_dat_i;
+	wire [31:0] wbs_dat_i_reg;
+	reg wbs_dat_i_en;
+	cmn_EnResetReg #(
+		32,
+		0
+	) wbs_dat_i_reset_reg (
+		.clk(clk),
+		.reset(reset),
+		.q(wbs_dat_i_reg),
+		.d(wbs_dat_i),
+		.en(wbs_dat_i_en)
+	);
+
+	assign i_stream_data = wbs_dat_i_reg;
 
 	reg [1:0] wbs_dat_o_sel;
 	cmn_Mux3 #(.p_nbits(32)) wbs_dat_o_mux(
@@ -289,20 +302,33 @@ module Wishbone (
 	reg is_write_loop;
 	reg is_read_loop;
 	reg is_read_error;
+	reg is_config_read_module;
+	reg is_config_write_module;
 	always @(*) begin
 		is_write_loop = ((wbs_stb_i && wbs_cyc_i) && wbs_we_i) && (wbs_adr_i == BASE_ADDRESS);
 		is_read_loop = ((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && (wbs_adr_i == BASE_ADDRESS);
 		is_read_error = ((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && (wbs_adr_i == ERROR_ADDRESS);
-		is_write_module = (((wbs_stb_i && wbs_cyc_i) && wbs_we_i) && i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
-		is_write_module_error = (((wbs_stb_i && wbs_cyc_i) && wbs_we_i) && !i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
-		is_read_module = (((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && o_stream_val) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
-		is_read_module_error = ((((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && !o_stream_val) && i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
-		is_read_busy_module = ((((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && !o_stream_val) && !i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		is_config_write_module = (((wbs_stb_i && wbs_cyc_i) && wbs_we_i)) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		is_config_read_module = (((wbs_stb_i && wbs_cyc_i) && !wbs_we_i)) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		// is_write_module = (((wbs_stb_i && wbs_cyc_i) && wbs_we_i) && i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		is_write_module = i_stream_rdy;
+		// is_write_module_error = (((wbs_stb_i && wbs_cyc_i) && wbs_we_i) && !i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		is_write_module_error = !i_stream_rdy;
+		// is_read_module = (((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && o_stream_val) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		is_read_module = o_stream_val;
+		// is_read_module_error = ((((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && !o_stream_val) && i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		is_read_module_error = !o_stream_val && i_stream_rdy;
+		// is_read_busy_module = ((((wbs_stb_i && wbs_cyc_i) && !wbs_we_i) && !o_stream_val) && !i_stream_rdy) && (((wbs_adr_i <= UPPER_BOUND_ADDRESS) && (wbs_adr_i > ERROR_ADDRESS)) && (wbs_adr_i[1:0] == 2'b00));
+		is_read_busy_module = !o_stream_val && !i_stream_rdy;
 	end
-	localparam IDLE = 1'd0;
-	localparam BUSY = 1'd1;
-	reg state;
-	reg next_state;
+	localparam IDLE = 2'd0;
+	localparam BUSY = 2'd1;
+	localparam READ_CONFIG = 2'd2;
+	localparam WRITE_CONFIG = 2'd3;
+
+
+	reg [1:0] state;
+	reg [1:0] next_state;
 	always @(posedge clk)
 		if (reset)
 			state <= IDLE;
@@ -312,10 +338,21 @@ module Wishbone (
 		next_state = state;
 		case (state)
 			IDLE:
-				if (is_read_busy_module)
-					next_state = BUSY;
+				// if (is_read_busy_module)
+				// 	next_state = BUSY;
+				// else 
+				if (is_config_read_module)
+					next_state = READ_CONFIG;
+				else if (is_config_write_module)
+					next_state = WRITE_CONFIG;
 				else
 					next_state = IDLE;
+			READ_CONFIG:
+				if (is_read_busy_module)
+					next_state = BUSY;
+				else next_state = IDLE;
+			WRITE_CONFIG:
+				next_state = IDLE;
 			BUSY:
 				if (o_stream_val)
 					next_state = IDLE;
@@ -334,6 +371,7 @@ module Wishbone (
 		input reg cs_wbs_ack_o;
 		input reg [1:0] cs_wbs_dat_o_sel;
 		input reg cs_xbar_val;
+		input reg cs_wbs_dat_i_en;
 		begin
 			i_stream_val = cs_i_stream_val;
 			o_stream_rdy = cs_o_stream_rdy;
@@ -343,35 +381,40 @@ module Wishbone (
 			wbs_ack_o = cs_wbs_ack_o;
 			wbs_dat_o_sel = cs_wbs_dat_o_sel;
 			xbar_val = cs_xbar_val;
+			wbs_dat_i_en = cs_wbs_dat_i_en;
 		end
 	endtask
 	always @(*) begin
-		cs(0, 0, 0, 0, 0, 0, 0, 0);
+		cs(0, 0, 0, 0, 0, 0, 0, 0, 0);
 		case (state)
 			IDLE:
 				if (is_read_loop)
-					cs(0, 0, 0, 1, 0, 1, loop_sel, 0);
+					cs(0, 0, 0, 1, 0, 1, loop_sel, 0, 0);
 				else if (is_write_loop)
-					cs(0, 0, 1, 1, 0, 1, x_sel, 0);
+					cs(0, 0, 1, 1, 0, 1, x_sel, 0, 0);
 				else if (is_read_error)
-					cs(0, 0, 0, 0, 0, 1, error_sel, 0);
-				else if (is_read_module)
-					cs(0, 1, 0, 1, 0, 1, data_sel, 1);
+					cs(0, 0, 0, 0, 0, 1, error_sel, 0, 0);
+				else if (is_config_read_module || is_config_write_module)
+					cs(0, 0, 0, 0, 0, 0, 0, 1, 1);
+			READ_CONFIG:
+				if (is_read_module)
+					cs(0, 1, 0, 1, 0, 1, data_sel, 0, 0);
 				else if (is_read_busy_module)
-					cs(0, 0, 0, 1, 0, 0, x_sel, 1);
+					cs(0, 0, 0, 1, 0, 0, x_sel, 0, 0);
 				else if (is_read_module_error)
-					cs(0, 0, 0, 1, 1, 1, x_sel, 1);
-				else if (is_write_module)
-					cs(1, 0, 0, 1, 0, 1, x_sel, 1);
+					cs(0, 0, 0, 1, 1, 1, x_sel, 0, 0);
+			WRITE_CONFIG:
+				if (is_write_module)
+					cs(1, 0, 0, 1, 0, 1, x_sel, 0, 0);
 				else if (is_write_module_error)
-					cs(0, 0, 0, 1, 1, 1, x_sel, 1);
+					cs(0, 0, 0, 1, 1, 1, x_sel, 0, 0);
 			BUSY:
 				if (o_stream_val)
-					cs(0, 1, 0, 1, 0, 1, data_sel, 0);
+					cs(0, 1, 0, 1, 0, 1, data_sel, 0, 0);
 				else
-					cs(0, 1, 0, 0, 0, 0, x_sel, 0);
+					cs(0, 1, 0, 0, 0, 0, x_sel, 0, 0);
 			default:
-				cs(0, 0, 0, 0, 0, 0, 0, 0);
+				cs(0, 0, 0, 0, 0, 0, 0, 0, 0);
 		endcase
 	end
 endmodule

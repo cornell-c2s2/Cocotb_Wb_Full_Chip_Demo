@@ -43,7 +43,11 @@ module Demo_Wrapper (
     wire [31:0] c_i_stream_data;
     wire c_o_stream_rdy;
 
-    Wishbone wb (
+    Wishbone 
+    #(
+        .n_modules(2)
+    ) 
+    wb (
         //‘ifdef USE_POWER_PINS
         // .vccd1(vccd1),	// User area 1 1.8V power
         // .vssd1(vssd1),	// User area 1 digital ground
@@ -67,12 +71,16 @@ module Demo_Wrapper (
         //wb -> xbar
         .i_stream_val (module_input_xbar_recv_val[0]),
         .i_stream_data(module_input_xbar_recv_msg[31:0]),
-        .o_stream_rdy (module_input_xbar_recv_rdy[0]),
+        .o_stream_rdy (module_output_xbar_send_rdy[0]),
 
         //xbar -> wb
-        .i_stream_rdy (module_output_xbar_send_rdy[0]),
+        .i_stream_rdy (module_input_xbar_recv_rdy[0]),
         .o_stream_val (module_output_xbar_send_val[0]),
         .o_stream_data(module_output_xbar_send_msg[31:0])
+        ,
+
+        .xbar_config(),
+        .xbar_val()
 
     );
 
@@ -86,7 +94,9 @@ module Demo_Wrapper (
     // wire crossbar_control;
     wire crossbar_control_val;
     wire crossbar_control_rdy;
+    wire crossbar_control_hard;
     // assign crossbar_control = 0; // hardcode for now
+    assign crossbar_control_hard = 1; // hardcode for now
     assign crossbar_control_val = 1;
 
 
@@ -104,16 +114,12 @@ module Demo_Wrapper (
 		.send_msg(c_i_stream_data),
 		.send_val(c_i_stream_val),
 		.send_rdy(c_i_stream_rdy),
-		.control(crossbar_control),
+		.control(crossbar_control_hard),
 		.control_val(crossbar_control_val),
 		.control_rdy(crossbar_control_rdy)
     );
 
     Adder adder (
-        //‘ifdef USE_POWER_PINS
-        // .vccd1(vccd1),	// User area 1 1.8V power
-        // .vssd1(vssd1),	// User area 1 digital ground
-        //‘endif
         
         .clk  (wb_clk_i),
         .reset(wb_rst_i),
@@ -128,6 +134,22 @@ module Demo_Wrapper (
         .o_stream_val (c_o_stream_val),
         .o_stream_data(c_o_stream_data)
     );
+
+    //     Adder adder (
+        
+    //     .clk  (wb_clk_i),
+    //     .reset(wb_rst_i),
+
+    //     // inputs
+    //     .i_stream_val (c_i_stream_val),
+    //     .i_stream_data(c_i_stream_data),
+    //     .o_stream_rdy (module_output_xbar_send_rdy[0]),
+
+    //     // outputs
+    //     .i_stream_rdy (c_i_stream_rdy),
+    //     .o_stream_val (module_output_xbar_send_val[0]),
+    //     .o_stream_data(module_output_xbar_send_msg[31:0])
+    // );
 
     crossbaroneinVRTL#(
         .BIT_WIDTH(32),
@@ -145,7 +167,7 @@ module Demo_Wrapper (
 		.send_msg(module_output_xbar_send_msg),
 		.send_val(module_output_xbar_send_val),
 		.send_rdy(module_output_xbar_send_rdy),
-		.control(crossbar_control),
+		.control(crossbar_control_hard),
 		.control_val(crossbar_control_val),
 		.control_rdy(crossbar_control_rdy)
     );

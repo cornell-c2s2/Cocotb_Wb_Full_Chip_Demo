@@ -23,8 +23,8 @@ module Demo_Wrapper (
 
     input wire [8:0] gpio_input,
     input wire [8:0] gpio_input_en,
-    input wire [8:0] gpio_output,
-    input wire [8:0] gpio_output_en,
+    output wire [8:0] gpio_output,
+    output wire [8:0] gpio_output_en,
     input wire gpio_istream_val,
     input wire gpio_istream_val_en,
     output wire gpio_istream_rdy,
@@ -112,9 +112,9 @@ module Demo_Wrapper (
     assign module_input_xbar_recv_msg[63:32] = {24'b0, gpio_input};
     assign module_output_xbar_send_rdy[1] = gpio_ostream_rdy;
 
-    assign module_input_xbar_recv_rdy[1] = gpio_istream_rdy;
-    assign module_output_xbar_send_val[1] = gpio_ostream_val;
-    assign module_output_xbar_send_msg[63:32] = {24'b0, gpio_output};
+    assign gpio_istream_rdy = module_input_xbar_recv_rdy[1];
+    assign gpio_ostream_val = module_output_xbar_send_val[1];
+    assign gpio_output = module_output_xbar_send_msg[39:32];
 
     // wire crossbar_control;
     wire wb_crossbar_control_val;

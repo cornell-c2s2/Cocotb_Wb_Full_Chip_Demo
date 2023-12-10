@@ -12,10 +12,11 @@ NUM_TESTS = 5
 @cocotb.test()
 @report_test
 async def loopback_test(dut):
-    caravelEnv = await test_configure(dut, timeout_cycles=100000)
+    caravelEnv = await test_configure(dut, timeout_cycles=50000)
 
     cocotb.log.info(f"[TEST] wait for configuration")  
     await caravelEnv.release_csb() # Set the SPI CSB  signal high impedance
+    caravelEnv.drive_gpio_in(0, 1)
     await caravelEnv.wait_mgmt_gpio(1)
     cocotb.log.info(f"[TEST] finished configuration") 
 

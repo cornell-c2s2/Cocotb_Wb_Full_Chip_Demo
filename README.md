@@ -35,7 +35,7 @@ echo -e "from loopback_test.loopback_test import loopback_test\nfrom wb_module_t
 
 For the verilog design files:<br />
 ```
-echo -e "-v $(USER_PROJECT_VERILOG)/rtl/adder.v\n-v $(USER_PROJECT_VERILOG)/rtl/wishbone.v\n-v $(USER_PROJECT_VERILOG)/rtl/serializer.v\n-v $(USER_PROJECT_VERILOG)/rtl/deserializer.v\n-v $(USER_PROJECT_VERILOG)/rtl/regs.v\n-v $(USER_PROJECT_VERILOG)/rtl/crossbars.v\n-v $(USER_PROJECT_VERILOG)/rtl/demo_wrapper.v" >> caravel_user_project/verilog/includes/includes.rtl.caravel_user_project
+echo -e "-v \$(USER_PROJECT_VERILOG)/rtl/adder.v\n-v \$(USER_PROJECT_VERILOG)/rtl/wishbone.v\n-v \$(USER_PROJECT_VERILOG)/rtl/serializer.v\n-v \$(USER_PROJECT_VERILOG)/rtl/deserializer.v\n-v \$(USER_PROJECT_VERILOG)/rtl/regs.v\n-v \$(USER_PROJECT_VERILOG)/rtl/crossbars.v\n-v \$(USER_PROJECT_VERILOG)/rtl/demo_wrapper.v" >> caravel_user_project/verilog/includes/includes.rtl.caravel_user_project
 ```
 
 Finall, we have to instantiate our design in the caravel wrapper. Copy the following code into caravel_user_project/verilog/rtl/user_project_wrapper.v:<br />

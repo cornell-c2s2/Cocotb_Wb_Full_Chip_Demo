@@ -1,4 +1,4 @@
-# c2s2demo_fall2023
+# Cocotb_Wb_Full_Chip_Demo
 
 ## Overview 
 This repo features two modules that perform addition by 1 in integer and fp32 formats. Inputs can be entered through either the wishbone or a set of GPIOs, which is toggled by a switch connected to one of the GPIOs. The fp32 module was generated using XLS and features 4 pipeline stages. 
@@ -38,17 +38,17 @@ cd ${HOME}/wb_demo
 git clone git@github.com:efabless/caravel_user_project.git caravel_user_project
 ```
 ```
-git clone git@github.com:ayc62/c2s2demo_fall2023.git
+git clone git@github.com:ayc62/Cocotb_Wb_Full_Chip_Demo.git
 ```
 
 Next, we have to setup the caravel environment with our demo code. Let's copy the design files into caravel:<br />
 ```
-cp c2s2demo_fall2023/*.v caravel_user_project/verilog/rtl/
+cp Cocotb_Wb_Full_Chip_Demo/*.v caravel_user_project/verilog/rtl/
 ```
 
 And let's copy our tests into caravel:<br />
 ```
-cp -a c2s2demo_fall2023/test/. caravel_user_project/verilog/dv/cocotb/
+cp -a Cocotb_Wb_Full_Chip_Demo/test/. caravel_user_project/verilog/dv/cocotb/
 ```
 
 Now, we have to modify the include paths for both the verilog and cocotb tests. For the cocotb tests:<br />

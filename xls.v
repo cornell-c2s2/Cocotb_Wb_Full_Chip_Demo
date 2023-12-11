@@ -245,3 +245,71 @@ module fadd_p4(
   carry_and_cancel: assert property (@(posedge clk) disable iff ($isunknown(p2_and_1872_comb | p2_and_1871_comb | p2_and_1870_comb)) p2_and_1872_comb | p2_and_1871_comb | p2_and_1870_comb) else $fatal(0, "Assertion failure via fail! @ xls/dslx/stdlib/apfloat.x:1683:15-1683:62");
   assign out = p4_tuple_1998;
 endmodule
+
+module XLS_Wrapper (
+  input wire clk,
+  input wire reset,
+
+  input  wire [31:0] op1,
+  output wire [31:0] out,
+
+  input  wire istream_val,
+  output wire istream_rdy,
+  output wire ostream_val,
+  input wire ostream_rdy,
+);
+
+  reg [2:0] counter;
+
+  localparam IDLE = 2'd0;
+  localparam CALC = 2'd1;
+  localparam DONE = 2'd2;
+
+  reg [1:0] state;
+  reg [1:0] next_state;
+
+  always @(posedge clk) begin
+    if ( reset ) state <= IDLE;
+    else state <= next_state;
+  end
+
+  always @(posedge clk) begin
+    if (reset) counter <= 3'd0;
+    else if ( counter == 3'd4 ) counter <= 3'd0;
+    else if ( state == CALC ) counter <= counter + 3'd1;
+    else counter <= counter;
+  end
+
+  always @(posedge clk) begin
+    case (state)
+      IDLE:
+        if ( !istream_val ) next_state = IDLE;
+        else next_state = CALC;
+      CALC:
+        if ( counter == 4'd4 ) next_state = DONE;
+        else next_state = CALC;
+      DONE:
+        if ( !ostream_rdy ) next_state = DONE;
+        else next_state = IDLE;
+      default:
+        next_state = state;
+    endcase
+  end
+
+  always @(*) begin
+    case (state)
+      IDLE:
+        istream_rdy = 1'b1;
+        ostream_val = 1'b0;
+      CALC:
+        istream_rdy = 1'b0;
+        ostream_val = 1'b0
+      DONE:
+        istream_rdy = 1'b0;
+        ostream_val = 1'b1;
+      default:
+        istream_rdy = 1'b0;
+        ostream_val = 1'b0;
+    endcase
+  end
+endmodule

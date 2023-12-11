@@ -97,7 +97,7 @@ make install check-env install_mcw setup-timing-scripts setup-cocotb
 
 Enter the cocotb folder where our tests are located:
 ```
-cd caravel_user_project/verilog/dv/cocotb
+cd verilog/dv/cocotb
 ```
 
 You can now run a given test, such as the loopback test, with the following command:

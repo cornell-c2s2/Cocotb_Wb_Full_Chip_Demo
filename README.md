@@ -25,7 +25,7 @@ cp c2s2demo_fall2023/*.v caravel_user_project/verilog/rtl/
 
 And let's copy our tests into caravel:<br />
 ```
-cp -a wb_demo/test/. caravel_user_project/verilog/dv/cocotb/
+cp -a c2s2demo_fall2023/test/. caravel_user_project/verilog/dv/cocotb/
 ```
 
 Now, we have to modify the include paths for both the verilog and cocotb tests. For the cocotb tests:<br />

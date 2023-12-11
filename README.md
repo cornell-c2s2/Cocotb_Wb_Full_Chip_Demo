@@ -1,10 +1,33 @@
 # c2s2demo_fall2023
 
-write something to introduce...
+## Overview 
+This repo features two modules that perform addition by 1 in integer and fp32 formats. Inputs can be entered through either the wishbone or a set of GPIOs, which is toggled by a switch connected to one of the GPIOs.
+![Alt text](./imgs/blockdiagram.png?raw=true "Title")
 
-include block diagram...
+More info on the wishbone design can be seen on the [C2S2 wiki page](https://confluence.cornell.edu/display/c2s2/Wishbone+bus). 
 
-To run the demo, we will start by creating a directory where we clone the demo and the caravel reposotories.<br />
+The wishbone interface allows the RISC-V processor to communicate to the user space through memory-mapped IOs. The mapping used in this repo is listed below:
+
+| Address     | Hardware          |
+| ----------- | ----------------- |
+| 0x30000000  | Loopback Register |
+| 0x30000004  | Error Register    |
+| 0x30000008  | FP32 Add 1        |
+| 0x3000000c  | Integer Add 1     |
+
+Full chip simulation is performed using the cocotb testing framework, located in the test folder. The c firmware allows us to configure the chip and read/write to/from the user space. The python allows us to interact with the chip (i.e. toggle gpios, tick the clock). A short description of the tests is listed below:
+
+| Test     | Description          |
+| ----------- | ----------------- |
+| wb_module_test  | Configures the chip to take inputs through wishbone; performs interleaved reads/writes to the fadd and integer add modules, and checks the error register |
+| gpio_module_test  | Configures the chip to take inputs through GPIO; writes and reads the integer add module through GPIO  |
+| loopback_test  | Writes and reads to the loopback register using wishbone   |
+| wb_adder_test  | Writes and reads to the integer add 1 module using wishbone      |
+| wb_fadd_test  | Writes and reads to the fp32 add 1 module using wishbone    |
+
+## Instructions to run
+
+First, log into the c2s2 server. To run the demo, we will start by creating a directory where we clone the demo and the caravel reposotories.<br />
 ```
 mkdir -p ${HOME}/wb_demo
 ```

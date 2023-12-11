@@ -1,19 +1,19 @@
 module fadd_p4(
   input wire clk,
-  input wire [31:0] input,
+  input wire [31:0] inp,
   output wire [31:0] out
 );
   // ===== Pipe stage 0:
 
   // Registers for pipe stage 0:
-  reg [31:0] p0_input;
+  reg [31:0] p0_inp;
   always_ff @ (posedge clk) begin
-    p0_input <= input;
+    p0_inp <= inp;
   end
 
   // ===== Pipe stage 1:
-  wire [7:0] p1_input_bexp__3_comb;
-  wire [22:0] p1_input_fraction__2_comb;
+  wire [7:0] p1_inp_bexp__3_comb;
+  wire [22:0] p1_inp_fraction__2_comb;
   wire [5:0] p1_add_1779_comb;
   wire [7:0] p1_y_bexp__2_comb;
   wire [27:0] p1_wide_x_comb;
@@ -29,7 +29,7 @@ module fadd_p4(
   wire [27:0] p1_wide_y__3_comb;
   wire [7:0] p1_shift_y_comb;
   wire p1_sticky_y_comb;
-  wire p1_input_sign__2_comb;
+  wire p1_inp_sign__2_comb;
   wire [27:0] p1_shifted_x_comb;
   wire [27:0] p1_shifted_y_comb;
   wire p1_greater_exp_sign_comb;
@@ -42,40 +42,40 @@ module fadd_p4(
   wire p1_eq_1823_comb;
   wire p1_eq_1824_comb;
   wire p1_ne_1825_comb;
-  assign p1_input_bexp__3_comb = p0_input[30:23];
-  assign p1_input_fraction__2_comb = p0_input[22:0];
-  assign p1_add_1779_comb = p1_input_bexp__3_comb[7:2] + 6'h07;
+  assign p1_inp_bexp__3_comb = p0_inp[30:23];
+  assign p1_inp_fraction__2_comb = p0_inp[22:0];
+  assign p1_add_1779_comb = p1_inp_bexp__3_comb[7:2] + 6'h07;
   assign p1_y_bexp__2_comb = 8'h7f;
-  assign p1_wide_x_comb = {{2'h0, p1_input_fraction__2_comb} | 25'h080_0000, 3'h0};
-  assign p1_greater_exp_bexp_comb = ~(p1_input_bexp__3_comb[7] | p1_input_bexp__3_comb[0] & p1_input_bexp__3_comb[1] & p1_input_bexp__3_comb[2] & p1_input_bexp__3_comb[3] & p1_input_bexp__3_comb[4] & p1_input_bexp__3_comb[5] & p1_input_bexp__3_comb[6]) ? p1_y_bexp__2_comb : p1_input_bexp__3_comb;
-  assign p1_wide_x__1_comb = p1_wide_x_comb & {28{p1_input_bexp__3_comb != 8'h00}};
-  assign p1_sub_1789_comb = {p1_add_1779_comb, p1_input_bexp__3_comb[1:0]} - p1_greater_exp_bexp_comb;
+  assign p1_wide_x_comb = {{2'h0, p1_inp_fraction__2_comb} | 25'h080_0000, 3'h0};
+  assign p1_greater_exp_bexp_comb = ~(p1_inp_bexp__3_comb[7] | p1_inp_bexp__3_comb[0] & p1_inp_bexp__3_comb[1] & p1_inp_bexp__3_comb[2] & p1_inp_bexp__3_comb[3] & p1_inp_bexp__3_comb[4] & p1_inp_bexp__3_comb[5] & p1_inp_bexp__3_comb[6]) ? p1_y_bexp__2_comb : p1_inp_bexp__3_comb;
+  assign p1_wide_x__1_comb = p1_wide_x_comb & {28{p1_inp_bexp__3_comb != 8'h00}};
+  assign p1_sub_1789_comb = {p1_add_1779_comb, p1_inp_bexp__3_comb[1:0]} - p1_greater_exp_bexp_comb;
   assign p1_wide_y__1_comb = 28'h400_0000;
   assign p1_sub_1791_comb = 8'h9b - p1_greater_exp_bexp_comb;
   assign p1_dropped_x_comb = p1_sub_1789_comb >= 8'h1c ? 28'h000_0000 : p1_wide_x__1_comb << p1_sub_1789_comb;
   assign p1_dropped_y_comb = p1_sub_1791_comb >= 8'h1c ? 28'h000_0000 : p1_wide_y__1_comb << p1_sub_1791_comb;
-  assign p1_shift_x_comb = p1_greater_exp_bexp_comb - p1_input_bexp__3_comb;
+  assign p1_shift_x_comb = p1_greater_exp_bexp_comb - p1_inp_bexp__3_comb;
   assign p1_sticky_x_comb = p1_dropped_x_comb[27:3] != 25'h000_0000;
   assign p1_wide_y__3_comb = 28'h400_0000;
   assign p1_shift_y_comb = p1_greater_exp_bexp_comb + 8'h81;
   assign p1_sticky_y_comb = p1_dropped_y_comb[27:26] != 2'h0;
-  assign p1_input_sign__2_comb = p0_input[31:31];
+  assign p1_inp_sign__2_comb = p0_inp[31:31];
   assign p1_shifted_x_comb = p1_shift_x_comb >= 8'h1c ? 28'h000_0000 : p1_wide_x__1_comb >> p1_shift_x_comb;
   assign p1_shifted_y_comb = p1_shift_y_comb >= 8'h1c ? 28'h000_0000 : p1_wide_y__3_comb >> p1_shift_y_comb;
-  assign p1_greater_exp_sign_comb = p1_input_bexp__3_comb[7] & p1_input_sign__2_comb;
+  assign p1_greater_exp_sign_comb = p1_inp_bexp__3_comb[7] & p1_inp_sign__2_comb;
   assign p1_addend_x_comb = p1_shifted_x_comb | {27'h000_0000, p1_sticky_x_comb};
   assign p1_addend_y_comb = p1_shifted_y_comb | {27'h000_0000, p1_sticky_y_comb};
   assign p1_max_exp_comb = 8'hff;
-  assign p1_addend_x__1_comb = p1_input_sign__2_comb ^ p1_greater_exp_sign_comb ? -p1_addend_x_comb : p1_addend_x_comb;
+  assign p1_addend_x__1_comb = p1_inp_sign__2_comb ^ p1_greater_exp_sign_comb ? -p1_addend_x_comb : p1_addend_x_comb;
   assign p1_addend_y__1_comb = p1_greater_exp_sign_comb ? -p1_addend_y_comb : p1_addend_y_comb;
-  assign p1_nand_1821_comb = ~(p1_input_bexp__3_comb[7] & p1_input_sign__2_comb);
-  assign p1_eq_1823_comb = p1_input_bexp__3_comb == p1_max_exp_comb;
-  assign p1_eq_1824_comb = p1_input_fraction__2_comb == 23'h00_0000;
-  assign p1_ne_1825_comb = p1_input_fraction__2_comb != 23'h00_0000;
+  assign p1_nand_1821_comb = ~(p1_inp_bexp__3_comb[7] & p1_inp_sign__2_comb);
+  assign p1_eq_1823_comb = p1_inp_bexp__3_comb == p1_max_exp_comb;
+  assign p1_eq_1824_comb = p1_inp_fraction__2_comb == 23'h00_0000;
+  assign p1_ne_1825_comb = p1_inp_fraction__2_comb != 23'h00_0000;
 
   // Registers for pipe stage 1:
   reg [7:0] p1_greater_exp_bexp;
-  reg p1_input_sign__2;
+  reg p1_inp_sign__2;
   reg p1_greater_exp_sign;
   reg [27:0] p1_addend_x__1;
   reg [27:0] p1_addend_y__1;
@@ -85,7 +85,7 @@ module fadd_p4(
   reg p1_ne_1825;
   always_ff @ (posedge clk) begin
     p1_greater_exp_bexp <= p1_greater_exp_bexp_comb;
-    p1_input_sign__2 <= p1_input_sign__2_comb;
+    p1_inp_sign__2 <= p1_inp_sign__2_comb;
     p1_greater_exp_sign <= p1_greater_exp_sign_comb;
     p1_addend_x__1 <= p1_addend_x__1_comb;
     p1_addend_y__1 <= p1_addend_y__1_comb;
@@ -138,7 +138,7 @@ module fadd_p4(
   assign p2_carry_fraction_comb = p2_abs_fraction_comb[27:1];
   assign p2_bit_slice_1875_comb = p2_abs_fraction_comb[26:0];
   assign p2_add_1876_comb = p2_leading_zeroes_comb + 28'hfff_ffff;
-  assign p2_result_sign__1_comb = p2_is_operand_inf_comb ? p1_input_sign__2 : p2_result_sign_comb;
+  assign p2_result_sign__1_comb = p2_is_operand_inf_comb ? p1_inp_sign__2 : p2_result_sign_comb;
   assign p2_concat_1877_comb = {p2_and_1870_comb, p2_and_1871_comb, p2_and_1872_comb};
   assign p2_carry_fraction__1_comb = p2_carry_fraction_comb | {26'h000_0000, p2_abs_fraction_comb[0]};
   assign p2_cancel_fraction_comb = p2_add_1876_comb >= 28'h000_001b ? 27'h000_0000 : p2_bit_slice_1875_comb << p2_add_1876_comb;

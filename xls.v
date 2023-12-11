@@ -266,7 +266,7 @@ module XLS_Wrapper (
 	always @(posedge clk)
 		if (reset)
 			counter <= 3'd0;
-		else if (counter == 3'd6)
+		else if (counter == 3'd4)
 			counter <= 3'd0;
 		else if (state == CALC)
 			counter <= counter + 3'd1;
@@ -275,7 +275,7 @@ module XLS_Wrapper (
 		case (state)
 			IDLE: if (istream_val) next_state = CALC;
 			CALC:
-				if (counter == 3'd6)
+				if (counter == 3'd4)
 					next_state = DONE;
 			DONE:
 				if (ostream_rdy)

@@ -17,23 +17,7 @@ NUM_TESTS = 1
 # // .gpio_xbar_config(io_in[9]), input
 # // .gpio_xbar_val(io_in[8]), input
 GPIO_XBAR_CONFIG = 9
-GPIO_XBAR_VAL = 8
-
-def configure_wb(caravelEnv):
-    caravelEnv.drive_gpio_in(GPIO_XBAR_CONFIG, 1)
-    caravelEnv.drive_gpio_in(GPIO_XBAR_VAL, 1)
-
-def write_in(n, caravelEnv):
-    caravelEnv.drive_gpio_in((18,11), n)
-    caravelEnv.drive_gpio_in(26, 1)
-
-def read_out(caravelEnv):
-    caravelEnv.drive_gpio_in(29, 1)
-    result = int ((caravelEnv.monitor_gpio(25,18).binstr),2)
-    return result
-    
-    
-    
+GPIO_XBAR_VAL = 8  
 
 @cocotb.test()
 @report_test
@@ -50,12 +34,8 @@ async def gpio_module_test(dut):
     caravelEnv.drive_gpio_in(8, 1)
     cocotb.triggers.ClockCycles(caravelEnv.clk, 3)
     
-    
     cocotb.log.info(f"[TEST] finished configuring crossbars") 
     
-    # await caravelEnv.wait_mgmt_gpio(0)  # wait for management GPIO value to be 0
-    # await caravelEnv.wait_mgmt_gpio(1) # wait for management GPIO value to be 1
-
 
     # configure wishbone
     caravelEnv.drive_gpio_in(GPIO_XBAR_CONFIG, 1)
@@ -64,13 +44,6 @@ async def gpio_module_test(dut):
     caravelEnv.drive_gpio_in(26, 0)
     
     await cocotb.triggers.ClockCycles(caravelEnv.clk, 1)
-    
-    # # sync with firmware
-    # await caravelEnv.wait_mgmt_gpio(0)  # wait for management GPIO value to be 0
-    # await caravelEnv.wait_mgmt_gpio(1) # wait for management GPIO value to be 1
-
-    # # read the error pin
-    # error_pin = int ((caravelEnv.monitor_gpio(ERROR_GPIO).binstr),2)
 
     cocotb.log.info(f"[TEST] 0.") 
 

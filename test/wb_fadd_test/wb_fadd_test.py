@@ -11,7 +11,7 @@ NUM_TESTS = 5
 
 @cocotb.test()
 @report_test
-async def wb_module_test(dut):
+async def wb_fadd_test(dut):
     caravelEnv = await test_configure(dut, timeout_cycles=80000)
 
     cocotb.log.info(f"[TEST] wait for configuration")  

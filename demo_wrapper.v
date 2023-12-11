@@ -21,10 +21,10 @@ module Demo_Wrapper (
 	output wire wbs_ack_o,
 	output wire [31:0] wbs_dat_o,
 
-    input wire [8:0] gpio_input,
-    input wire [8:0] gpio_input_en,
-    output wire [8:0] gpio_output,
-    output wire [8:0] gpio_output_en,
+    input wire [7:0] gpio_input,
+    input wire [7:0] gpio_input_en,
+    output wire [7:0] gpio_output,
+    output wire [7:0] gpio_output_en,
     input wire gpio_istream_val,
     input wire gpio_istream_val_en,
     output wire gpio_istream_rdy,
@@ -136,7 +136,7 @@ module Demo_Wrapper (
     );
 
     cmn_Mux2 #(
-        32
+        1
     ) xbar_val_mux (
         .in0(gpio_xbar_val),
         .in1(wb_crossbar_control_val),
@@ -199,20 +199,33 @@ module Demo_Wrapper (
         .o_stream_data(c_o_stream_data[31:0])
     );
 
-    Adder adder0 (
+    // Adder adder0 (
         
-        .clk  (wb_clk_i),
+    //     .clk  (wb_clk_i),
+    //     .reset(wb_rst_i),
+
+    //     // inputs
+    //     .i_stream_val (c_i_stream_val[1]),
+    //     .i_stream_data(c_i_stream_data[63:32]),
+    //     .o_stream_rdy (c_o_stream_rdy[1]),
+
+    //     // outputs
+    //     .i_stream_rdy (c_i_stream_rdy[1]),
+    //     .o_stream_val (c_o_stream_val[1]),
+    //     .o_stream_data(c_o_stream_data[63:32])
+    // );
+
+    XLS_Wrapper fadd_0 (
+        .clk(wb_clk_i),
         .reset(wb_rst_i),
 
-        // inputs
-        .i_stream_val (c_i_stream_val[1]),
-        .i_stream_data(c_i_stream_data[63:32]),
-        .o_stream_rdy (c_o_stream_rdy[1]),
+        .op0(c_i_stream_data[63:32]),
+        .out(c_o_stream_data[63:32]),
 
-        // outputs
-        .i_stream_rdy (c_i_stream_rdy[1]),
-        .o_stream_val (c_o_stream_val[1]),
-        .o_stream_data(c_o_stream_data[63:32])
+        .istream_val(c_i_stream_val[1]),
+        .istream_rdy(c_i_stream_rdy[1]),
+        .ostream_val(c_o_stream_val[1]),
+        .ostream_rdy(c_o_stream_rdy[1])
     );
 
     //     Adder adder (

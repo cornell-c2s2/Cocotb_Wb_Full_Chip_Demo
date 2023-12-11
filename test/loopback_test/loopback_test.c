@@ -26,8 +26,6 @@ void test(uint32_t input, int delay) {
 
     dummyDelay(delay); // Insert delay 
 
-    // uint32_t read_reg_loopback = USER_readWord(LOOPBACK_OFFSET);
-    // uint32_t read_reg_error = USER_readWord(ERROR_OFFSET);
     uint32_t read_reg_error = reg_error;
     uint32_t read_reg_loopback = reg_loopback;
 

@@ -38,7 +38,7 @@ For the verilog design files:<br />
 echo -e "-v \$(USER_PROJECT_VERILOG)/rtl/adder.v\n-v \$(USER_PROJECT_VERILOG)/rtl/wishbone.v\n-v \$(USER_PROJECT_VERILOG)/rtl/regs.v\n-v \$(USER_PROJECT_VERILOG)/rtl/crossbars.v\n-v \$(USER_PROJECT_VERILOG)/rtl/muxes.v\n-v \$(USER_PROJECT_VERILOG)/rtl/xls.v\n-v \$(USER_PROJECT_VERILOG)/rtl/demo_wrapper.v" >> caravel_user_project/verilog/includes/includes.rtl.caravel_user_project
 ```
 
-Finall, we have to instantiate our design in the caravel wrapper. Copy the following code into caravel_user_project/verilog/rtl/user_project_wrapper.v:<br />
+Finall, we have to instantiate our design in the caravel wrapper. Comment out the user_proj_example module and copy the following code into caravel_user_project/verilog/rtl/user_project_wrapper.v:<br />
 
 
 ```

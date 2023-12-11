@@ -6,10 +6,10 @@ include block diagram...
 
 To run the demo, we will start by creating a directory where we clone the demo and the caravel reposotories.<br />
 ```
-mkdir -p ${HOME}/c2s2/wb_demo
+mkdir -p ${HOME}/wb_demo
 ```
 ```
-cd ${HOME}/c2s2/wb_demo
+cd ${HOME}/wb_demo
 ```
 ```
 git clone git@github.com:efabless/caravel_user_project.git caravel_user_project

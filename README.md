@@ -1,7 +1,7 @@
 # c2s2demo_fall2023
 
 ## Overview 
-This repo features two modules that perform addition by 1 in integer and fp32 formats. Inputs can be entered through either the wishbone or a set of GPIOs, which is toggled by a switch connected to one of the GPIOs.
+This repo features two modules that perform addition by 1 in integer and fp32 formats. Inputs can be entered through either the wishbone or a set of GPIOs, which is toggled by a switch connected to one of the GPIOs. The fp32 module was generated using XLS and features 4 pipeline stages. 
 ![Alt text](./imgs/blockdiagram.png?raw=true "Title")
 
 More info on the wishbone design can be seen on the [C2S2 wiki page](https://confluence.cornell.edu/display/c2s2/Wishbone+bus). 

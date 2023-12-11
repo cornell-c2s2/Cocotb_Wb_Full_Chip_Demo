@@ -250,7 +250,7 @@ module XLS_Wrapper (
   input wire clk,
   input wire reset,
 
-  input  wire [31:0] op1,
+  input  wire [31:0] op0,
   output wire [31:0] out,
 
   input  wire istream_val,
@@ -312,4 +312,11 @@ module XLS_Wrapper (
         ostream_val = 1'b0;
     endcase
   end
+
+  fadd_p4 xls (
+    .clk (clk),
+    .inp (op0),
+    .out (out)
+  );
+  
 endmodule
